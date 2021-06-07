@@ -2,12 +2,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.core import serializers
 import json
 from django.db.models import Q
 from counter.models import *
 from django.db.utils import IntegrityError
+from uuid import uuid4
 
 # Create your views here.
 User = get_user_model()
@@ -124,3 +125,111 @@ def delete_employee(request):
         return JsonResponse({'error': 'false', 'message': 'data deleted successfully'})
     else:
         return JsonResponse({'error': 'true', 'message': 'invalid requests'})
+
+
+def create_or_update_service(request):
+    if request.method == "POST":
+        sname = request.POST.get('s_name')
+        desc = request.POST.get('desc')
+        doc = request.POST.get('doc')
+        sid = request.POST.get('sid')
+        try:
+            if sid is not None:
+                raise ValueError
+            _x, _ = Service.objects.get_or_create(
+                name=sname, desc=desc, doc=doc)
+            _s = "service created successfully"
+        except:
+            _x = Service.objects.get(id=sid)
+            _x.name = sname
+            _x.desc = desc
+            _x.doc = doc
+            _x.save()
+            _s = "Service updated Successfully"
+
+        context = {
+            'error': 'false',
+            'data': {
+                'id': _x.pk,
+                'name': _x.name,
+                'description': _x.desc,
+                'documents': _x.doc
+
+            },
+            'mesaage': _s
+
+        }
+        return JsonResponse(_s)
+
+    else:
+        return JsonResponse({'error': 'true', 'message': 'invalid requests'})
+
+
+def delete_service(request):
+    if request.method == 'POST':
+        uid = request.POST.get('s_id')
+        try:
+            Service.objects.get(id=uid).delete()
+        except:
+            pass
+        return JsonResponse({'error': 'false', 'message': 'Service deleted successfully'})
+    else:
+        return JsonResponse({'error': 'true', 'message': 'invalid requests'})
+
+
+def get_service_data(request, id):
+    try:
+        _x = Service.objects.get(id=id)
+
+        context = {
+            'error': 'false',
+            'data': {
+                'id': _x.pk,
+                'name': _x.name,
+                'description': _x.desc,
+                'documents': _x.doc
+
+            }
+        }
+    except:
+        context = {
+            'error': 'true',
+            'message': 'invalid service id'
+        }
+    return JsonResponse(context)
+
+
+def employee_table(request):
+    context = {
+        'data': Employee.objects.all()
+    }
+    return render(request, 'table.html', context)
+
+
+def employee_manage(request):
+    return render(request, 'index.html')
+
+
+def hitSupport(request, sid):
+    # x =
+    if request.session.get('room') is None and request.session.get('sid') != sid:
+        support = support.objects.get(id=sid)
+        n = str(uuid4())
+        n = n.replace('-', "")
+        Room.objects.get_or_create(
+            rid=n, created_by=request.user, service_id=sid)
+        request.session['room'] = n
+        request.session['sid'] = sid
+
+    context = {
+        'room': request.session['room'],
+        'service_id': request.session['sid']
+    }
+
+    return JsonResponse(context)
+
+
+def roomChat(request, sid, room_id):
+    pass
+
+    # return HttpResponse(request,)

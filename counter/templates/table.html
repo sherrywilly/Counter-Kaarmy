@@ -1,0 +1,14 @@
+<table class="table table-bordered">
+  {% for i in data %}
+  <tr>
+    <th class="edit" id="{{i.pk}}">{{i.user.username}}</th>
+  </tr>
+  {% endfor %}
+</table>
+{% comment %}
+<script>
+  $(".edit").click(function () {
+    alert($(this).attr("id"));
+  });
+</script>
+{% endcomment %}

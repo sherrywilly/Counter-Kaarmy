@@ -28,3 +28,24 @@ class Service(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Room(models.Model):
+    ROOM_STATUS = (('0', 'Open'), ('1', 'Closed'))
+    rid = models.CharField(max_length=200, unique=True)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    room_status = models.CharField(
+        max_length=30, default=0, choices=ROOM_STATUS)
+    # handled_by = models.
+
+
+class Thread(models.Model):
+    MSG_TYPE = (('1', 'text'), ('2', 'img'))
+    msg = models.TextField(blank=True, null=True)
+    msg_type = models.CharField(default='1', choices=MSG_TYPE, max_length=20)
+    created_by = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    seen = models.BooleanField(default=False, null=True, blank=True)
