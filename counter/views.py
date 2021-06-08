@@ -420,3 +420,46 @@ def my_employee(request):
 
         })
     return JsonResponse({'error': 'false', 'data': _li})
+
+# ! ALL SERVICES
+
+
+def AllService(request):
+    _x = Service.objects.filter(Q(company_id=request.user.company.pk) | Q(
+        company_id=request.user.employee.company.id))
+    _li = []
+    for _i in _x:
+        _li.append({
+            'id': _i.pk,
+            'name': _i.name,
+            'description': _i.desc,
+            'documents': _i.doc
+        })
+    return JsonResponse({'error': 'false', 'data': _li})
+
+# ! all counters
+
+
+def Allcounters(request):
+    l = [i.pk for i in Service.objects.filter(Q(company_id=request.user.company.pk) | Q(
+        company_id=request.user.employee.company.id))]
+
+    _x = Counter.objects.filter(service_id__in=l)
+    _li = []
+    for _i in _x:
+        _li.append(
+            {
+                'id': _i.pk,
+                'name': _i.name,
+                'service': {
+                    'id': _i.service.pk,
+                    'name': _i.service.name
+                },
+                'employee': {
+                    'id': _i.employee.pk,
+                    'id': _i.employee.user.username,
+                }
+
+            }
+        )
+    return JsonResponse({'error': 'false', 'data': _li})
