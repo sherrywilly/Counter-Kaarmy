@@ -80,7 +80,7 @@ def create_or_update_employee(request):
         status = request.POST.get('status')
         try:
             x, m = Employee.objects.get_or_create(
-                user_id=eid, emp_id=eid, position=pos, j_date=jdate)
+                user_id=eid, emp_id=eid, position=pos, j_date=jdate, company_id=request.user.company.pk)
             if not m:
                 raise ValueError
             context = {
@@ -147,7 +147,7 @@ def create_or_update_service(request):
             if sid is not None:
                 raise ValueError
             _x, _ = Service.objects.get_or_create(
-                name=sname, desc=desc, doc=doc)
+                name=sname, desc=desc, doc=doc, company_id=request.user.company.pk)
             _s = "service created successfully"
         except:
             _x = Service.objects.get(id=sid)
@@ -388,7 +388,8 @@ def delete_counter(request):
 
 def my_team(request):
     # ! need to add complany based filter
-    _x = Employee.objects.filter(status="0").exclude(user_id=request.user.id)
+    _x = Employee.objects.filter(
+        status="0", company_id=request.user.employee.company.id).exclude(user_id=request.user.id)
     _li = []
     for i in _x:
         _li.append({
@@ -405,7 +406,7 @@ def my_team(request):
 
 def my_employee(request):
     # ! need to add complany based filter
-    _x = Employee.objects.all()
+    _x = Employee.objects.filter(company_id=request.user.company.pk)
     _li = []
     for i in _x:
         _li.append({

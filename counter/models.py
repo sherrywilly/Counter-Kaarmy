@@ -9,6 +9,7 @@ class Employee(models.Model):
     E_CHOICE = (('0', 'Online'), ('1', 'Leave'), ('3', 'Resigned'),)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # ! company foreign key is pending to add
+    # company = models.ForeignKey(on_delete=models.CASCADE,null=True,blank=True)
     emp_id = models.CharField(
         max_length=50, unique=True, verbose_name="employee id")
     position = models.CharField(max_length=100, verbose_name="job position")
@@ -21,6 +22,7 @@ class Employee(models.Model):
 
 
 class Service(models.Model):
+    # company = models.ForeignKey(on_delete=models.CASCADE,null=True,blank=True)
     # ! company foreign key is pending to add
     name = models.CharField(max_length=200, verbose_name="service name")
     desc = models.TextField(blank=True, null=True, verbose_name="description")
