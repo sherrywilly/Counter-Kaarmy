@@ -30,6 +30,12 @@ class Service(models.Model):
         return self.name
 
 
+class Counter(models.Model):
+    name = models.CharField(max_length=200)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    employee = models.OneToOneField(Employee, on_delete=models.DO_NOTHING)
+
+
 class Room(models.Model):
     ROOM_STATUS = (('0', 'Open'), ('1', 'Closed'))
     rid = models.CharField(max_length=200, unique=True)
@@ -37,8 +43,25 @@ class Room(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     room_status = models.CharField(
-        max_length=30, default=0, choices=ROOM_STATUS)
-    # handled_by = models.
+        max_length=30, default='0', choices=ROOM_STATUS)
+    counter = models.ForeignKey(
+        Counter, on_delete=models.SET_NULL, blank=True, null=True)
+    #
+
+    @property
+    def get_latest_msg(self):
+        try:
+            _x = self.thread_set.all()[::-1][0]
+            _context = {
+                'last_message': _x.msg,
+                'author': _x.created_by.username,
+                'author_id': _x.created_by.pk,
+                'created_at': _x.created_at,
+            }
+        except:
+            _context = {}
+
+        return _context
 
 
 class Thread(models.Model):
@@ -49,3 +72,7 @@ class Thread(models.Model):
         User, on_delete=models.SET_NULL, null=True, blank=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     seen = models.BooleanField(default=False, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.msg)
