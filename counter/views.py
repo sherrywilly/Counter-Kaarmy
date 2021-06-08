@@ -410,9 +410,12 @@ def my_employee(request):
     for i in _x:
         _li.append({
             'id': i.pk,
+            'emp_id': i.emp_id,
             'username': i.user.username,
             'email': i.user.email,
             'status': i.status,
-            'joined_date': i.j_date
+            'position': i.position,
+            'joined_date': i.j_date,
+
         })
     return JsonResponse({'error': 'false', 'data': _li})
