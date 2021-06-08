@@ -463,3 +463,19 @@ def Allcounters(request):
             }
         )
     return JsonResponse({'error': 'false', 'data': _li})
+
+# ! accept the pending chats and assigned to counters
+
+
+def RoomAccept(request, room_id):
+    try:
+        x = Room.objects.get(rid=room_id)
+        x.counter_id = request.user.employee.counter.pk
+        x.save()
+        err = 'false'
+    except:
+        err = 'true'
+    return JsonResponse({
+        'error': err,
+        'room_id': room_id
+    })
