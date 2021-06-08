@@ -7,9 +7,5 @@ urlpatterns = [
     path('table/', employee_table, name='table'),
     path('counter/', include('counter.urls')),
     path('', employee_manage, name='manage'),
-    # path('test/', PendingChat, name='manage'),
-    # path('my_team/', my_team, name='manage'),
-    # path('<name>/', get_user_by_name),
-    # path('', create_or_update_employee),
-    # path('get/<int:id>', get_employee_data),
+  
 ]
